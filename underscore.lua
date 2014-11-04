@@ -61,4 +61,32 @@ function _.reduceRight (t, f, m)
 	return m
 end
 
+local Chain = {}
+function Chain:new(t, o)
+	o = o or {}
+	self.chained = t
+	setmetatable(o, self)
+	self.__index = self
+	return o
+end
+
+function Chain:tap(f)
+	_.forEach(self.chained, f)
+	return self
+end
+
+function Chain:value()
+	return self.chained
+end
+
+_.forEach(_, function (k, f)
+	Chain[k] = function (self, ...)
+		self.chained = f(self.chained, ...)
+		return self
+	end
+end)
+
+function _.chain(t)
+	return Chain:new(t)
+end
 return _
