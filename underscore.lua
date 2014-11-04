@@ -60,6 +60,28 @@ function _.reduceRight (t, f, m)
 	end
 	return m
 end
+--[[
+--
+--]]
+
+function _.property(name)
+	return function (t)
+		return t[name]
+	end
+end
+
+function _.result(name, ...)
+	local args = {...}
+	return function (t)
+		if checkTable(t) then
+			return t
+		end
+		if checkFunc(t[name]) then
+			return t[name]
+		end
+		return t[name](t, unpack(args))
+	end
+end
 
 local Chain = {}
 function Chain:new(t, o)
