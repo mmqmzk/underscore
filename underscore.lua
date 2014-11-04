@@ -36,7 +36,18 @@ function _.map (t, f)
 		return ret
 	end
 	for k, v in pairs(t) do
-		ret[k] = f(k , v)
+		ret[k] = f(v, k)
+	end
+	return ret
+end
+
+function _.imap (t, f)
+	local ret = {}
+	if checkTable(t) or checkFunc(f) then
+		return ret
+	end
+	for k, v in ipairs(t) do
+		ret[k] = f(v, k)
 	end
 	return ret
 end
@@ -60,12 +71,144 @@ function _.reduceRight (t, f, m)
 	end
 	return m
 end
+
+function _.find(t, f)
+	if checkTable(t) or checkFunc(f) then
+		return
+	end
+	for k, v in pairs(t) do
+		if f(v, k) then
+			return v, k
+		end
+	end
+end
+
+function _.filter(t, f)
+	local ret = {}
+	if checkTable(t) or checkFunc(f) then
+		return ret
+	end
+	for k, v in pairs(t) do
+		if f(v, k) then
+			ret[#ret + 1] = v
+		end
+	end
+	return ret
+end
+
+function _.reject(t, f)
+	return _.filter(t, function (v, k)
+		return not f(v, k)
+	end)
+end
+
+function _.where(t, e)
+	return _.filter(t, function (v)
+		if checkTable(e) then
+			return v == e
+		end
+		for i, j in pairs(e) do
+			if v[i] ~= j then
+				return false
+			end
+		end
+		return true
+	end)
+end
+
+function findWhere(t, e)
+	if checkTable(t) then
+		return
+	end
+	for k, v in pairs(t) do
+		local find = true
+		for i, j in pairs(e) do
+			if v[i] ~= j then
+				find = false
+				break
+			end
+		end
+		if find then
+			return v, k
+		end
+	end
+end
+
+function _.any(t, f)
+	if checkTable(t) or checkFunc(f) then
+		return false
+	end
+	for k, v in pairs(t) do
+		if f(v, k) then
+			return true
+		end
+	end
+	return false
+end
+
+function _.all(t, f)
+	if checkTable(t) or checkFunc(f) then
+		return true
+	end
+	for k, v in pairs(t) do
+		if not f(v, k) then
+			return false
+		end
+	end
+	return true
+end
+
+function _.sortBy (t, f)
+	local isStr = checkFunc(f)
+	local array = _.map(t, function (v)
+		local e
+		if  isStr then
+			e = v[f]
+		else
+			e = f(v)
+		end
+		return {key = e, value = v}
+	end)
+	table.sort(array, function (a, b) return a.key < b.key end)
+	return _.map(array, _.property('value'))
+end
+
+function groupBy(t, f)
+	local isStr = checkFunc(f)
+	local ret = {}
+	if checkTable(t) then
+		return ret
+	end
+	_.each(t, function (v)
+		local e
+		if  isStr then
+			e = v[f]
+		else
+			e = f(v)
+		end
+		l = ret[e] or {}
+		l[#l + 1] = v
+		ret[e] = l	
+	end)
+	return ret
+end
+
+function _.invoke(t, name, ...)
+	local ret = {}
+	if checkTable(t) then
+		return ret
+	end
+	for k, v in pairs(t) do
+		ret[k] = v[name](v, ...)
+	end
+	return ret
+end
 --[[
 --
 --]]
 
 function _.property(name)
-	return function (t)
+	return function (k, t)
 		return t[name]
 	end
 end
