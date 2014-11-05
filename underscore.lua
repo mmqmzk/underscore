@@ -250,7 +250,7 @@ end
 --]]
 
 function _.property(name)
-	return function (k, t)
+	return function (t)
 		return t[name]
 	end
 end
