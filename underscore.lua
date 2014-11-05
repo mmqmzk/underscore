@@ -158,6 +158,48 @@ function _.all(t, f)
 	return true
 end
 
+function _.max(t, f)
+	if checkTable(t) then
+		return t
+	end
+	local isStr = checkFunc(f)
+	local m, value
+	for k, v in pairs(t) do
+		local cur
+		if isStr then
+			cur = v[f]
+		else
+			cur = f(v)
+		end
+		if m == nil or value < cur then
+			m = v
+			value = cur
+		end
+	end
+	return m
+end
+
+function _.min(t, f)
+	if checkTable(t) then
+		return t
+	end
+	local isStr = checkFunc(f)
+	local m, value
+	for k, v in pairs(t) do
+		local cur
+		if isStr then
+			cur = v[f]
+		else
+			cur = f(v)
+		end
+		if m == nil or value > cur then
+			m = v
+			value = cur
+		end
+	end
+	return m
+end
+
 function _.sortBy (t, f)
 	local isStr = checkFunc(f)
 	local array = _.map(t, function (v)
