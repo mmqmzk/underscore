@@ -272,8 +272,7 @@ local Chain = {}
 function Chain:new(t, o)
 	o = o or {}
 	self.chained = t
-	setmetatable(o, self)
-	self.__index = self
+	setmetatable(o, {__index = self})
 	return o
 end
 
