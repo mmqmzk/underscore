@@ -8,6 +8,27 @@ local function checkFunc (f)
 	return type(f) ~= 'function'
 end
 
+function _.keys(t)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end	
+	for k, v in pairs(t) do
+		result[#result + 1] = k
+	end
+	return result
+end
+function _.values(t)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end
+	for k, v in pairs(t) do
+		result[#result + 1] = v
+	end
+	return result
+end
+
 function _.each (t, f)
 	if checkTable(t) or checkFunc(f) then
 		return
@@ -31,25 +52,25 @@ function _.pt (t)
 end
 
 function _.map (t, f)
-	local ret = {}
+	local result = {}
 	if checkTable(t) or checkFunc(f) then
-		return ret
+		return result
 	end
 	for k, v in pairs(t) do
-		ret[k] = f(v, k)
+		result[k] = f(v, k)
 	end
-	return ret
+	return result
 end
 
 function _.imap (t, f)
-	local ret = {}
+	local result = {}
 	if checkTable(t) or checkFunc(f) then
-		return ret
+		return result
 	end
 	for k, v in ipairs(t) do
-		ret[k] = f(v, k)
+		result[k] = f(v, k)
 	end
-	return ret
+	return result
 end
 
 function _.reduce (t, f, m)
@@ -66,6 +87,7 @@ function _.reduceRight (t, f, m)
 	if checkTable(t) or checkFunc(f) then
 		return m
 	end
+	t = _.values(t)
 	for i = #t, 1, -1 do
 		m = f(m, t[i], i)
 	end
@@ -84,16 +106,16 @@ function _.find(t, f)
 end
 
 function _.filter(t, f)
-	local ret = {}
+	local result = {}
 	if checkTable(t) or checkFunc(f) then
-		return ret
+		return result
 	end
 	for k, v in pairs(t) do
 		if f(v, k) then
-			ret[#ret + 1] = v
+			result[#result + 1] = v
 		end
 	end
-	return ret
+	return result
 end
 
 function _.reject(t, f)
@@ -217,9 +239,9 @@ end
 
 function groupBy(t, f)
 	local isStr = checkFunc(f)
-	local ret = {}
+	local result = {}
 	if checkTable(t) then
-		return ret
+		return result
 	end
 	_.each(t, function (v)
 		local e
@@ -228,23 +250,114 @@ function groupBy(t, f)
 		else
 			e = f(v)
 		end
-		l = ret[e] or {}
+		l = result[e] or {}
 		l[#l + 1] = v
-		ret[e] = l	
+		result[e] = l	
 	end)
-	return ret
+	return result
 end
 
 function _.invoke(t, name, ...)
-	local ret = {}
+	local result = {}
 	if checkTable(t) then
-		return ret
+		return result
 	end
 	for k, v in pairs(t) do
-		ret[k] = v[name](v, ...)
+		result[k] = v[name](v, ...)
 	end
-	return ret
+	return result
 end
+
+function _.shuffle(t)
+	local result = _.values(t)
+	for i = #result, 1, -1 do
+		r = math.random(1, i)
+		result[i], result[r] = result[r], result[i]
+	end
+	return result
+end
+
+function _.sample(t, n)
+	n = n or 1
+	local array = _.values(t)
+	local result = {}
+	local m = n
+	for i = #array, 1, -1 do
+		r = math.random(1, i)
+		if r <= m then
+			m = m - 1
+			result[#result + 1] = array[i]
+		end
+	end
+	if n == 1 then
+		return result[1]
+	end
+	return result
+end
+
+function _.unoin(...)
+	local result = {}
+	local set = {}
+	for k, v in ipairs{...} do
+		if checkTable(v) then
+			if not set[v] then
+				set[v] = 1
+				result[#result + 1] = v
+			end
+		else
+			for i, j in pairs(v) do
+				if not set[j] then
+					set[j] = 1
+					result[#result + 1] = j
+				end
+			end
+		end
+	end
+	return result
+end
+
+function _.intersection(...)
+	local tables = {...}
+	local result = {}
+	local set = {}
+	for k, v in ipairs(tables) do
+		if checkTable(v) then
+			set[v] = 1 + (set[v] or 0)
+		else
+			for i, j in pairs(v) do
+				set[j] = 1 + (set[j] or 0)
+			end
+		end
+	end
+	local m = #tables
+	for k, v in pairs(set) do
+		if v == m then
+			result[#result + 1] = k
+		end
+	end
+	return result
+end
+
+function _.differece(t, ...)
+	if checkTable(t) then
+		return {}
+	end
+	local set = {}
+	for k, v in pairs(t) do
+		set[v] = 1	
+	end
+	for k, v in ipairs{...} do
+		if checkTable(v) then
+			set[v] = nil
+		else
+			for i, j in pairs(v) do
+				set[j] = nil
+			end
+		end
+	end
+	return _.keys(set)
+end
+
 --[[
 --
 --]]
