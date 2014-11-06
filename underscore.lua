@@ -462,4 +462,5 @@ end)
 function _.chain(t)
 	return Chain:new(t)
 end
+
 return _
