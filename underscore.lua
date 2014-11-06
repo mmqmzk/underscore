@@ -397,6 +397,21 @@ function _.uniq(t, f)
 	return _.values(set)
 end
 
+function _.zip(...)
+	local tables = {...}
+	local m = #tables
+	local n = #(tables[1])
+	local result = {}
+	for i = 1, n do
+		local t = {}
+		for j = 1, m do
+			t[#t + 1] = tables[j][i]
+		end
+		result[i] = t
+	end
+	return result
+end
+
 --[[
 --
 --]]
