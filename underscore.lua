@@ -18,6 +18,7 @@ function _.keys(t)
 	end
 	return result
 end
+
 function _.values(t)
 	local result = {}
 	if checkTable(t) then
@@ -191,7 +192,7 @@ function _.max(t, f)
 		if isStr then
 			cur = v[f]
 		else
-			cur = f(v)
+			cur = f(v, k)
 		end
 		if m == nil or value < cur then
 			m = v
@@ -212,7 +213,7 @@ function _.min(t, f)
 		if isStr then
 			cur = v[f]
 		else
-			cur = f(v)
+			cur = f(v, k)
 		end
 		if m == nil or value > cur then
 			m = v
@@ -224,12 +225,12 @@ end
 
 function _.sortBy (t, f)
 	local isStr = checkFunc(f)
-	local array = _.map(t, function (v)
+	local array = _.map(t, function (v, k)
 		local e
 		if  isStr then
 			e = v[f]
 		else
-			e = f(v)
+			e = f(v, k)
 		end
 		return {key = e, value = v}
 	end)
@@ -243,17 +244,32 @@ function groupBy(t, f)
 	if checkTable(t) then
 		return result
 	end
-	_.each(t, function (v)
+	_.each(t, function (v, k)
 		local e
 		if  isStr then
 			e = v[f]
 		else
-			e = f(v)
+			e = f(v, k)
 		end
 		l = result[e] or {}
 		l[#l + 1] = v
 		result[e] = l	
 	end)
+	return result
+end
+
+function _.pluck(t, name)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end
+	for k, v in pairs(t) do
+		if checkTable(v) then
+			result[#result + 1] = v
+		else
+			result[#result + 1] = v[name]
+		end
+	end
 	return result
 end
 
@@ -356,6 +372,29 @@ function _.differece(t, ...)
 		end
 	end
 	return _.keys(set)
+end
+
+function _.uniq(t, f)
+	if checkTable(t) then
+		return t
+	end
+	local set = {}
+	for k, v in pairs(t) do
+		local value
+		if not f then
+			value = v
+		elseif checkFunc(f) then
+			if checkTable(v) then
+				value = v
+			else
+				value = v[f]
+			end
+		else
+			value = f(v, k)
+		end
+		set[value] = v
+	end
+	return _.values(set)
 end
 
 --[[
