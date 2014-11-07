@@ -430,6 +430,35 @@ function _.object(keys, values)
 	return result
 end
 
+function _.indexOf(t, e, isSorted)
+	if checkTable(t) then
+		return
+	end
+	if isSorted then
+		local i = 1
+		local j = #t
+		while i <= j do
+			if i == j and t[i] ~= e then
+				return
+			end
+			local m = math.floor((i + j) / 2)
+			if t[m] == e then
+				return m
+			elseif e < t[m] then
+				j = m - 1
+			else
+				i = m + 1
+			end
+		end
+	else
+		for k, v in pairs(t) do
+			if v == e then
+				return k
+			end
+		end
+	end
+end
+
 --[[
 --
 --]]
@@ -451,6 +480,45 @@ function _.result(name, ...)
 		end
 		return t[name](t, unpack(args))
 	end
+end
+
+function _.slice(t, from, to)
+	if checkTable(t) then
+		return t
+	end
+	local len = #t
+	from = from or 1
+	to = to or len
+	if from < 0 then
+		from = from + len + 1
+	end
+	if to < 0 then
+		to = to + len + 1
+	end
+	local result = {}
+	for i = from, to do
+		result[#result + 1] = t[i]
+	end
+	return result
+end
+
+function _.splice(t, from, n, ...)
+	local inserts = {...}
+	if checkTable(t) then
+		return inserts
+	end
+	if from < 0 then
+		from = from + #t + 1
+	end
+	n = n or 1
+	local result = {}
+	for i = 1, n do
+		result[#result + 1] = table.remove(t, from)
+	end
+	for k, v in ipairs(inserts) do
+		table.insert(t, from + k - 1, v)
+	end
+	return result
 end
 
 local Chain = {}
