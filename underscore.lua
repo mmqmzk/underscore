@@ -412,6 +412,24 @@ function _.zip(...)
 	return result
 end
 
+function _.object(keys, values)
+	local result = {}
+	if checkTable(keys) then
+		result[keys] = values
+		return result
+	end
+	if not values then
+		for k, v in pairs(keys) do
+			result[v[1]] = v[2]
+		end
+	else
+		for k, v in pairs(keys) do
+			result[v] = values[k]
+		end
+	end
+	return result
+end
+
 --[[
 --
 --]]
