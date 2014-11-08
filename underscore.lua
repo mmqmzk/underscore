@@ -438,9 +438,6 @@ function _.indexOf(t, e, isSorted)
 		local i = 1
 		local j = #t
 		while i <= j do
-			if i == j and t[i] ~= e then
-				return
-			end
 			local m = math.floor((i + j) / 2)
 			if t[m] == e then
 				return m
