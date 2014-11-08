@@ -456,6 +456,31 @@ function _.indexOf(t, e, isSorted)
 	end
 end
 
+function _.lastIndexOf(t, e)
+	if checkTable(t) then
+		return
+	end
+	for i = #t, 1, -1 do
+		if t[i] == e then
+			return i
+		end
+	end
+end
+
+function _.range(start, stop, step)
+	step = step or 1
+	if not stop then
+		stop = start
+		start = 1
+	end
+
+	local result = {}
+	for i = start, stop, step do
+		result[#result + 1] = i
+	end
+	return result
+end
+
 --[[
 --
 --]]
@@ -476,6 +501,20 @@ function _.result(name, ...)
 			return t[name]
 		end
 		return t[name](t, unpack(args))
+	end
+end
+
+function _.bind(f, ...)
+	if checkFunc(f) then
+		return
+	end
+	local args = {...}
+	return function (...)
+		local param = _.slice(args)
+		for k, v in ipairs{...} do
+			param[#param + 1] = v
+		end
+		return f(unpack(param))
 	end
 end
 

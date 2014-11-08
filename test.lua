@@ -67,5 +67,21 @@ print('_.pt(_.splice(arr4, 2, 2, "f")')
 _.pt(_.splice(arr4, 2, 2, "f", "g"))
 print('---')
 _.pt(arr4)
+print('=====lastIndexOf=====')
+assert(_.lastIndexOf({3, 5, 6}, 5) == 2)
+assert(_.lastIndexOf({1, 3, 4, 7, 9}, 7, true) == 4)
+assert(_.lastIndexOf({1, 3, 4, 7, 9}, 2, true) == nil)
+print('=====range=====')
+_.pt(_.range(3))
+_.pt(_.range(2, 5))
+_.pt(_.range(2, 10, 2))
+print('=====bind=====')
+local function foo(a, b, c)
+	return a + b + c
+end
+local bar = _.bind(foo, 1, 2)
+print(bar(3))
+local foo2 = _.bind(arr[1].getAge, arr[1])
+print('bind getage :', foo2())
 
 
