@@ -543,10 +543,11 @@ function _.splice(t, from, n, ...)
 	if checkTable(t) then
 		return inserts
 	end
+	from = from or 1
 	if from < 0 then
 		from = from + #t + 1
 	end
-	n = n or 1
+	n = n or #t - from + 1
 	local result = {}
 	for i = 1, n do
 		result[#result + 1] = table.remove(t, from)
