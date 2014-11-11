@@ -531,6 +531,42 @@ function _.bind(f, ...)
 	end
 end
 
+function _.invert(t)
+	if checkTable(t) then
+		return t
+	end
+	local result = {}
+	for k, v in pairs(t) do
+		result[v] = k
+	end
+	return result
+end
+
+function _.pick(t, ...)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end
+	for k, v in ipairs{...} do
+		result[v] = t[v]
+	end
+	return result
+end
+
+function _.omit(t, ...)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end
+	local set = _.invert{...}
+	for k, v in pairs(t) do
+		if set[k] == nil then
+			result[k] = v
+		end
+	end
+	return result
+end
+
 function _.slice(t, from, to)
 	if checkTable(t) then
 		return t
@@ -574,7 +610,7 @@ end
 local Chain = {}
 function Chain:new(t, o)
 	o = o or {}
-	self.chained = t
+	o.chained = t
 	setmetatable(o, {__index = self})
 	return o
 end
