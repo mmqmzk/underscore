@@ -30,6 +30,19 @@ function _.values(t)
 	return result
 end
 
+function _.functions(t)
+	local result = {}
+	if checkTable(t) then
+		return result
+	end
+	for k, v in pairs(t) do
+		if type(v) == 'function' then
+			result[#result + 1] = v
+		end
+	end
+	return result
+end
+
 function _.each (t, f)
 	if checkTable(t) or checkFunc(f) then
 		return
@@ -567,7 +580,7 @@ function Chain:new(t, o)
 end
 
 function Chain:tap(f)
-	_.forEach(self.chained, f)
+	_.each(self.chained, f)
 	return self
 end
 
