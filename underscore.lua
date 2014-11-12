@@ -198,15 +198,10 @@ function _.max(t, f)
 	if checkTable(t) then
 		return t
 	end
-	local isStr = checkFunc(f)
+	local itr = _.iteratee(f)
 	local m, value
 	for k, v in pairs(t) do
-		local cur
-		if isStr then
-			cur = v[f]
-		else
-			cur = f(v, k)
-		end
+		local cur = itr(v, k)
 		if m == nil or value < cur then
 			m = v
 			value = cur
@@ -219,15 +214,10 @@ function _.min(t, f)
 	if checkTable(t) then
 		return t
 	end
-	local isStr = checkFunc(f)
+	local itr = _.iteratee(f)
 	local m, value
 	for k, v in pairs(t) do
-		local cur
-		if isStr then
-			cur = v[f]
-		else
-			cur = f(v, k)
-		end
+		local cur = itr(v, k)
 		if m == nil or value > cur then
 			m = v
 			value = cur
@@ -237,14 +227,9 @@ function _.min(t, f)
 end
 
 function _.sortBy (t, f)
-	local isStr = checkFunc(f)
+	local itr = _.iteratee(f)
 	local array = _.map(t, function (v, k)
-		local e
-		if  isStr then
-			e = v[f]
-		else
-			e = f(v, k)
-		end
+		local e = itr(v, k)
 		return {key = e, value = v}
 	end)
 	table.sort(array, function (a, b) return a.key < b.key end)
@@ -252,18 +237,13 @@ function _.sortBy (t, f)
 end
 
 function groupBy(t, f)
-	local isStr = checkFunc(f)
 	local result = {}
 	if checkTable(t) then
 		return result
 	end
+	local itr = _.iteratee(f)
 	_.each(t, function (v, k)
-		local e
-		if  isStr then
-			e = v[f]
-		else
-			e = f(v, k)
-		end
+		local e = itr(v, k)
 		l = result[e] or {}
 		l[#l + 1] = v
 		result[e] = l	
@@ -534,11 +514,13 @@ end
 function _.iteratee(value, ...)
 	local t = type(value)
 	if t == 'function' then
-		return _.result(value, ...)
+		return function (...)
+			return value(...)
+		end
 	elseif t == 'table' then
 		return _.matches(value)
 	else 
-		return _.property(value)
+		return _.result(value, ...)
 	end
 end
 
