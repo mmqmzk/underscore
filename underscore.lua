@@ -531,6 +531,17 @@ function _.matches(m)
 	end
 end
 
+function _.iteratee(value, ...)
+	local t = type(value)
+	if t == 'function' then
+		return _.result(value, ...)
+	elseif t == 'table' then
+		return _.matches(value)
+	else 
+		return _.property(value)
+	end
+end
+
 function _.bind(f, ...)
 	if checkFunc(f) then
 		return
