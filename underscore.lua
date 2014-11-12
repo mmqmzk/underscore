@@ -517,6 +517,20 @@ function _.result(name, ...)
 	end
 end
 
+function _.matches(m)
+	return function (t)
+		if checkTable(t) then
+			return t == m
+		end
+		for k, v in pairs(m) do
+			if t[k] ~= v then
+				return false
+			end
+		end
+		return true
+	end
+end
+
 function _.bind(f, ...)
 	if checkFunc(f) then
 		return
