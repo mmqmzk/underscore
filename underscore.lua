@@ -76,17 +76,6 @@ function _.map (t, f)
 	return result
 end
 
-function _.imap (t, f)
-	local result = {}
-	if checkTable(t) or checkFunc(f) then
-		return result
-	end
-	for k, v in ipairs(t) do
-		result[k] = f(v, k)
-	end
-	return result
-end
-
 function _.reduce (t, f, m)
 	if checkTable(t) or checkFunc(f) then
 		return m
@@ -112,8 +101,9 @@ function _.find(t, f)
 	if checkTable(t) or checkFunc(f) then
 		return
 	end
+	local itr = _.iteratee(f)
 	for k, v in pairs(t) do
-		if f(v, k) then
+		if itr(v, k) then
 			return v, k
 		end
 	end
@@ -124,8 +114,9 @@ function _.filter(t, f)
 	if checkTable(t) or checkFunc(f) then
 		return result
 	end
+	local itr = _.iteratee(f)
 	for k, v in pairs(t) do
-		if f(v, k) then
+		if itr(v, k) then
 			result[#result + 1] = v
 		end
 	end
@@ -174,8 +165,9 @@ function _.any(t, f)
 	if checkTable(t) or checkFunc(f) then
 		return false
 	end
+	local itr = _.iteratee(f)
 	for k, v in pairs(t) do
-		if f(v, k) then
+		if itr(v, k) then
 			return true
 		end
 	end
@@ -186,8 +178,9 @@ function _.all(t, f)
 	if checkTable(t) or checkFunc(f) then
 		return true
 	end
+	local itr = _.iteratee(f)
 	for k, v in pairs(t) do
-		if not f(v, k) then
+		if not itr(v, k) then
 			return false
 		end
 	end
@@ -233,7 +226,7 @@ function _.sortBy (t, f)
 		return {key = e, value = v}
 	end)
 	table.sort(array, function (a, b) return a.key < b.key end)
-	return _.map(array, _.property('value'))
+	return _.pluck(array, 'value')
 end
 
 function groupBy(t, f)
@@ -252,18 +245,7 @@ function groupBy(t, f)
 end
 
 function _.pluck(t, name)
-	local result = {}
-	if checkTable(t) then
-		return result
-	end
-	for k, v in pairs(t) do
-		if checkTable(v) then
-			result[#result + 1] = v
-		else
-			result[#result + 1] = v[name]
-		end
-	end
-	return result
+	return _.map(t, _.property(name))
 end
 
 function _.invoke(t, name, ...)
@@ -372,19 +354,9 @@ function _.uniq(t, f)
 		return t
 	end
 	local set = {}
+	local itr = _.iteratee(f)
 	for k, v in pairs(t) do
-		local value
-		if not f then
-			value = v
-		elseif checkFunc(f) then
-			if checkTable(v) then
-				value = v
-			else
-				value = v[f]
-			end
-		else
-			value = f(v, k)
-		end
+		local value = itr(v, k)
 		set[value] = v
 	end
 	return _.values(set)
