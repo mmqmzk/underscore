@@ -513,10 +513,12 @@ end
 
 function _.iteratee(value, ...)
 	local t = type(value)
-	if t == 'function' then
+	if t == 'nil' then
 		return function (...)
-			return value(...)
+			return ...
 		end
+	elseif t == 'function' then
+		return value
 	elseif t == 'table' then
 		return _.matches(value)
 	else 
