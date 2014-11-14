@@ -130,35 +130,14 @@ function _.reject(t, f)
 end
 
 function _.where(t, e)
-	return _.filter(t, function (v)
-		if checkTable(e) then
-			return v == e
-		end
-		for i, j in pairs(e) do
-			if v[i] ~= j then
-				return false
-			end
-		end
-		return true
-	end)
+	return _.filter(t, _.matches(e))
 end
 
 function findWhere(t, e)
 	if checkTable(t) then
 		return
 	end
-	for k, v in pairs(t) do
-		local find = true
-		for i, j in pairs(e) do
-			if v[i] ~= j then
-				find = false
-				break
-			end
-		end
-		if find then
-			return v, k
-		end
-	end
+	return _.find(t, _.matches(e))
 end
 
 function _.any(t, f)
