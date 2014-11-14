@@ -522,7 +522,13 @@ function _.iteratee(value, ...)
 	elseif t == 'table' then
 		return _.matches(value)
 	else 
-		return _.result(value, ...)
+		local args = {...}
+		return function (v, k)
+			if checkFunc(v[value]) then
+				return v[value]
+			end
+			v[value](unpack(args))			
+		end
 	end
 end
 
