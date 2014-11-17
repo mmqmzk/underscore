@@ -450,7 +450,7 @@ end
 
 function _.matches(m)
 	return function (t)
-		if checkTable(t) then
+		if checkTable(t) or checkTable(m) then
 			return t == m
 		end
 		for k, v in pairs(m) do
