@@ -1,18 +1,18 @@
 local _ = require 'underscore'
 
 local function gen (name, age)
-	return {
-		name = name,
-		age = age or math.random(1, 9),
-		getAge = function (self)
-			return self.age
-		end
-	}
+    return {
+        name = name,
+        age = age or math.random(1, 9),
+        getAge = function (self)
+            return self.age
+        end
+    }
 end
 
 local arr = {}
 for i = 1, 10 do
-	arr[#arr + 1] = gen('Bob' .. i)
+    arr[#arr + 1] = gen('Bob' .. i)
 end
 
 _.pt(_.max(arr, _.property('age')))
@@ -79,7 +79,7 @@ _.pt(_.range(2, 5))
 _.pt(_.range(2, 10, 2))
 print('=====bind=====')
 local function foo(a, b, c)
-	return a + b + c
+    return a + b + c
 end
 local bar = _.bind(foo, 1, 2)
 print(bar(3))
